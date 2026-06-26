@@ -31,7 +31,7 @@ ${complaint}
 ### DYNAMIC RULES ###
 ${user_type === 'merchant' ? '- CRITICAL: User is a merchant. Focus on settlement delays and merchant operations.' : ''}
 ${user_type === 'agent' ? '- CRITICAL: User is an agent. Focus on cash-in issues and agent operations.' : ''}
-${language ? `- CRITICAL: You MUST write the \`customer_reply\` strictly in the ${language} language.` : '- CRITICAL: You MUST write the `customer_reply` in the same language (or Banglish) as the complaint.'}
+${language ? `- CRITICAL: You MUST write the \`customer_reply\` strictly in the ${language} language.` : '- CRITICAL: You MUST write the `customer_reply` in the exact same language as the user complaint (e.g., if English, reply in English; if Bengali, reply in Bengali).'}
 
 ### HARD SAFETY RULES & WRITING GUIDELINES (Disqualification if violated) ###
 1. NEVER ask for a PIN, OTP, password, or full card number. Instead, ALWAYS proactively include a protective phrase in the \`customer_reply\` like: "Please do not share your PIN or OTP with anyone."
