@@ -27,10 +27,15 @@ export function classifyByRules(
   let confidence = 0.3;
   const matchedKeywords: string[] = [];
 
-  if (/otp|pin|password|phishing|scam|suspicious|asked for (otp|pin|password)/i.test(lower)) {
+  if (/(provide|share|give|need|verify|asked for|ask for|wants|dite|de|bolse|chailo|lagbe|cai|jana|chaiche).*(otp|pin|password|cvv|gopon|ওটিপি|পিন|পাসওয়ার্ড)/i.test(lower) || /phishing|scam|suspicious|প্রতারণা|স্ক্যাম/i.test(lower)) {
     case_type = 'phishing_or_social_engineering';
     matchedKeywords.push('phishing');
     confidence = 0.95;
+  } else if (/otp|pin|password|cvv/i.test(lower)) {
+    // Mentions credentials, but lacks explicit threat/request framing.
+    case_type = 'phishing_or_social_engineering';
+    matchedKeywords.push('potential_phishing');
+    confidence = 0.60; // < 70% confidence will route to LLM
   } else if (/wrong (number|recipient)|sent to wrong|transfer to wrong/i.test(lower)) {
     case_type = 'wrong_transfer';
     matchedKeywords.push('wrong_transfer');
