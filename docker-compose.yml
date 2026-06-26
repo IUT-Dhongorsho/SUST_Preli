@@ -27,8 +27,6 @@ services:
 
   prometheus:
     image: prom/prometheus
-    ports:
-      - "9090:9090"
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
 
@@ -42,8 +40,6 @@ services:
 
   loki:
     image: grafana/loki
-    ports:
-      - "3100:3100"
     volumes:
       - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml:ro
     command: -config.file=/etc/loki/local-config.yaml
