@@ -25,3 +25,14 @@ export const CASE_TYPES = [
   export const CHANNELS = ['in_app_chat', 'call_center', 'email', 'merchant_portal', 'field_agent'] as const;
   export const USER_TYPES = ['customer', 'merchant', 'agent', 'unknown'] as const;
   export const LANGUAGES = ['en', 'bn', 'mixed'] as const;
+
+  export const UNSAFE_PATTERNS = [
+    /OTP/i,
+    /PIN/i,
+    /password/i,
+    /secret/i,
+    /card number/i,
+    /credit card/i,
+    /debit card/i,
+  ];
+  
