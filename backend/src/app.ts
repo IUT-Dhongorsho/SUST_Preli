@@ -3,8 +3,9 @@ dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
-import healthRoute from './routes/health.route';
-import { trackMetrics, metricsRoute } from './middlewares/metrics.middleware';
+import healthRoute from './routes/health.route.js';
+import analyzeRoute from './routes/analyze.routes.js';
+import { trackMetrics, metricsRoute } from './middlewares/metrics.middleware.js';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(trackMetrics);
 // Routes
 app.get('/metrics', metricsRoute);
 app.use('/health', healthRoute);
+app.use('/', analyzeRoute);
 
 if (require.main === module) {
     const port = process.env.PORT || 3001;

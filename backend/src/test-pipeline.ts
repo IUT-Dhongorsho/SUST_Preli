@@ -1,47 +1,59 @@
 import fs from 'fs';
 import path from 'path';
-import { analyzeTicketWithLLM } from './services/llm/groq.service';
 
-// Make sure you set process.env.GROQ_API_KEY before running this!
-// e.g., export GROQ_API_KEY="your-key-here"
+// This script acts like the Hackathon Automated Judge.
+// It sends all cases from samples.json to your live server.
 
 async function run() {
-    if (!process.env.GROQ_API_KEY) {
-        console.error("❌ ERROR: GROQ_API_KEY environment variable is missing.");
-        console.error("Run: export GROQ_API_KEY='your_key' && npx ts-node src/test-pipeline.ts");
-        process.exit(1);
-    }
-
-    // Using the absolute path to the sample cases file based on your machine
-    const samplePath = '/Users/sieam/Downloads/SUST_Preli_Sample_Cases.json';
+    const samplePath = path.join(process.cwd(), '../sample/samples.json');
     
     let rawData;
     try {
         rawData = fs.readFileSync(samplePath, 'utf8');
     } catch (e) {
-        console.error("Could not find SUST_Preli_Sample_Cases.json at", samplePath);
+        console.error("❌ Could not find samples.json at", samplePath);
         process.exit(1);
     }
 
-    const cases = JSON.parse(rawData).cases;
+    const data = JSON.parse(rawData);
+    const cases = data.cases;
 
-    console.log(`Found ${cases.length} test cases. Running the first one...`);
+    console.log(`=========================================`);
+    console.log(`🤖 STARTING AUTOMATED JUDGE TEST HARNESS`);
+    console.log(`Total Cases to Test: ${cases.length}`);
+    console.log(`=========================================\n`);
 
-    // Just testing the first one to avoid spamming the API
-    const testCase = cases[0];
-    console.log(`\n--- Test Case: ${testCase.label} ---`);
-    console.log("Input:", JSON.stringify(testCase.input, null, 2));
+    for (let i = 0; i < cases.length; i++) {
+        const testCase = cases[i];
+        console.log(`\n▶️  [TEST ${i + 1}/${cases.length}]: ${testCase.label} (${testCase.id})`);
+        
+        try {
+            const startTime = Date.now();
+            const response = await fetch('http://localhost:3001/analyze-ticket', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(testCase.input)
+            });
 
-    console.log("\n🚀 Calling LLM Pipeline...");
-    const startTime = Date.now();
-    const result = await analyzeTicketWithLLM(testCase.input);
-    const endTime = Date.now();
+            const latency = Date.now() - startTime;
+            const result = await response.json();
 
-    console.log(`\n✅ Result (${endTime - startTime}ms):`);
-    console.log(JSON.stringify(result, null, 2));
-
-    console.log("\nExpected Output:");
-    console.log(JSON.stringify(testCase.expected_output, null, 2));
+            if (response.ok) {
+                console.log(`   ✅ SUCCESS (${latency}ms) - Case Type: ${result.case_type}`);
+                console.log(`   📝 Summary: ${result.agent_summary}`);
+            } else {
+                console.log(`   ❌ FAILED (${latency}ms) - Status: ${response.status}`);
+                console.log(`   ⚠️ Error:`, JSON.stringify(result));
+            }
+        } catch (error) {
+            console.log(`   🚨 FATAL ERROR: Could not connect to server. Is it running on port 3001?`);
+            break; // Stop testing if server is down
+        }
+    }
+    
+    console.log(`\n=========================================`);
+    console.log(`🏁 TEST HARNESS COMPLETE`);
+    console.log(`=========================================`);
 }
 
 run();
