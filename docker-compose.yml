@@ -10,6 +10,10 @@ services:
     depends_on:
       - app1
       - app2
+      - frontend
+
+  frontend:
+    build: ./frontend
 
   app1:
     build: ./backend
