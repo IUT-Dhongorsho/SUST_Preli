@@ -74,6 +74,9 @@ export const analyzeTicketWithLLM = async (payload: TicketPayload): Promise<Tick
                     // Deterministic field-level overwrite if LLM fails twice (as per ARCHITECTURE.md)
                     console.log("❌ Max safety attempts reached. Forcing deterministic overwrite.");
                     parsedResponse.customer_reply = "We have received your request. Our support team will review it carefully. Please do not share your PIN or OTP with anyone. Any eligible amount will be returned through official channels.";
+                    if (!parsedResponse.reason_codes.includes("safety_fallback")) {
+                        parsedResponse.reason_codes.push("safety_fallback");
+                    }
                     clearTimeout(timeoutId);
                     return parsedResponse;
                 }
