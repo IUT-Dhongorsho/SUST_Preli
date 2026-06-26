@@ -1,0 +1,7 @@
+{
+  "title": "QueueStorm Investigator Metrics",
+  "timezone": "browser",
+  "schemaVersion": 38,
+  "refresh": "5s",
+  "panels": []
+}
