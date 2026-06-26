@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { AnalyzeRequestSchema, AnalyzeResponseSchema } from '../core/schemas.js';
 import { matchTransaction } from '../services/transaction_matching/matcher.js';
 import { classifyByRules } from '../services/classification/classification.js';
-import { sanitizeReply } from '../services/safety/filter.js';
+import { sanitizeReply } from '../services/safety_filter/safetyGate.service.js';
 
 export const analyzeTicket = async (req: Request, res: Response) => {
   try {
