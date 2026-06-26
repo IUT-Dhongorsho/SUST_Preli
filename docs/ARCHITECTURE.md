@@ -206,36 +206,6 @@ backend/src/
 
 ---
 
-## 5. Team Split (3 people)
-
-### Joint — first 15 minutes, before anyone splits off
-
-Draft and freeze `core/enums.ts` and `core/schemas.ts` together. C writes, A and B review against the spec. **No changes after this without a 30-second group sync** — every other file depends on this contract being stable.
-
-### Person A — Routing, Infra, Orchestration
-
-- `routes/ticket.route.ts`, `routes/health.route.ts`
-- `middlewares/validate.middleware.ts`, `rateLimiter.middleware.ts`, `metrics.middleware.ts`
-- `services/input_validation/input.validate.ts`
-- `nginx/nginx.conf`, `docker-compose.yml`, deployment, `.env.example`
-- Owns the **call order** in `ticket.route.ts`. Build against stubbed return values from classification/LLM/safety services immediately (hardcode fake responses) so B and C aren't blocked waiting for the real route.
-
-### Person B — Evidence Reasoning (35-point core)
-
-- `services/transaction_matching/transaction.match.ts`
-- `services/llm/groq.service.ts`, `schemaRepair.ts`, `fallback.ts`
-- `core/prompt.ts` (evidence-reasoning portions; safety instructions co-owned with C)
-- Standalone test script looping `SUST_Preli_Sample_Cases.json` through `transaction.match.ts` + `groq.service.ts` directly (no HTTP needed), diffing against `expected_output`. Should never be blocked on A's route.
-
-### Person C — Safety + Rules + Schema (20 + 15 points, disqualification risk)
-
-- `services/classification/classification.ts`
-- `services/safety_filter/safetyGate.service.ts`, `templates.ts`
-- `core/enums.ts`, `core/schemas.ts` (drafts first, within first 15 min)
-- Adversarial test file (prompt-injection attempts, near-miss phishing language, refund-bait complaints) run against the integrated pipeline.
-
----
-
 ## 6. Timeline (4.5 hours)
 
 | Time | Activity |
