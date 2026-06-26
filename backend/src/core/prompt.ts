@@ -37,9 +37,12 @@ ${language ? `- CRITICAL: You MUST write the \`customer_reply\` strictly in the 
 1. NEVER ask for a PIN, OTP, password, or full card number. Instead, ALWAYS proactively include a protective phrase in the \`customer_reply\` like: "Please do not share your PIN or OTP with anyone."
 2. NEVER confirm a refund, reversal, or account unblock. Use safe language: "any eligible amount will be returned through official channels".
 3. NEVER instruct the customer to contact a suspicious third party.
-4. If multiple transactions plausibly match the complaint, return \`evidence_verdict: 'insufficient_data'\` and ask for clarification. Do NOT guess.
+4. AMBIGUITY RULE: If \`Ambiguous Amounts\` is true AND the case is NOT a duplicate payment, you MUST return \`relevant_transaction_id: null\` and \`evidence_verdict: 'insufficient_data'\`. Do NOT guess the ID.
 5. In \`agent_summary\`, ALWAYS explicitly cite the relevant transaction ID, amount, and counterparty number from the evidence. Be highly specific.
 6. In \`recommended_next_action\`, mention the exact transaction ID and the specific operational policy or team that should handle it.
+7. ESTABLISHED RECIPIENT RULE: If the \`Established Recipients\` JSON contains the counterparty phone number of the matching transaction, you MUST set \`evidence_verdict: 'inconsistent'\` because they have sent money to this person before.
+8. DUPLICATE PAYMENT RULE: If \`Has Potential Duplicates\` is true, the case is \`duplicate_payment\` and you MUST set \`evidence_verdict: 'consistent'\`. You MUST set \`relevant_transaction_id\` to the ID of the SECOND (latest/newest) transaction in the duplicate pair, NEVER the first one.
+9. Carefully translate Bangla text (e.g. "ক্যাশ ইন" = cash_in, "পাঠিয়েছে" = transfer) to match transaction history types.
 
 ### OUTPUT SCHEMA (EXACT JSON ONLY) ###
 {

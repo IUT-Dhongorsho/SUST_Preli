@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-// This script acts like the Hackathon Automated Judge.
-// It sends all cases from samples.json to your live server.
+// Remote URL provided by the user
+const REMOTE_URL = 'http://47.130.23.164/analyze-ticket';
 
 async function run() {
     const samplePath = path.join(process.cwd(), '../sample/samples.json');
@@ -19,7 +19,8 @@ async function run() {
     const cases = data.cases;
 
     console.log(`=========================================`);
-    console.log(`🤖 STARTING AUTOMATED JUDGE TEST HARNESS`);
+    console.log(`🌍 STARTING REMOTE AUTOMATED JUDGE`);
+    console.log(`Target: ${REMOTE_URL}`);
     console.log(`Total Cases to Test: ${cases.length}`);
     console.log(`=========================================\n`);
 
@@ -31,13 +32,14 @@ async function run() {
         
         try {
             const startTime = Date.now();
-            const response = await fetch('http://localhost:3001/analyze-ticket', {
+            const response = await fetch(REMOTE_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(testCase.input)
             });
 
             const latency = Date.now() - startTime;
+            
             if (response.ok) {
                 const result = await response.json();
                 const expected = testCase.expected_output;
@@ -57,24 +59,19 @@ async function run() {
                     if (!isCaseMatch) console.log(`      Expected Case Type: ${expected.case_type}, Got: ${result.case_type}`);
                     if (!isTxnMatch) console.log(`      Expected Txn: ${expected.relevant_transaction_id}, Got: ${result.relevant_transaction_id}`);
                     if (!isVerdictMatch) console.log(`      Expected Verdict: ${expected.evidence_verdict}, Got: ${result.evidence_verdict}`);
-                    
-                    console.log(`\n   --- RAW LLM OUTPUT ---`);
-                    console.log(JSON.stringify(result, null, 2));
-                    console.log(`   ----------------------\n`);
                 }
             } else {
                 const errText = await response.text();
                 console.log(`   🛑 API ERROR (${latency}ms) - Status: ${response.status}`);
                 console.log(`   ⚠️ Error:`, errText);
             }
-        } catch (error) {
-            console.log(`   🚨 FATAL ERROR: Could not connect to server. Is it running on port 3001?`);
-            break; // Stop testing if server is down
+        } catch (error: any) {
+            console.log(`   🚨 FATAL ERROR: Could not connect to remote server. Error: ${error.message}`);
         }
     }
     
     console.log(`\n=========================================`);
-    console.log(`🏁 TEST HARNESS COMPLETE`);
+    console.log(`🏁 REMOTE TEST HARNESS COMPLETE`);
     console.log(`📊 Score: ${passed}/${cases.length} successful responses`);
     console.log(`=========================================`);
 }

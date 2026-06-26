@@ -27,7 +27,7 @@ export function classifyByRules(
   let confidence = 0.3;
   const matchedKeywords: string[] = [];
 
-  if (/(provide|share|give|need|verify|asked for|ask for|wants|dite|de|bolse|chailo|lagbe|cai|jana|chaiche).*(otp|pin|password|cvv|gopon|ওটিপি|পিন|পাসওয়ার্ড)/i.test(lower) || /phishing|scam|suspicious|প্রতারণা|স্ক্যাম/i.test(lower)) {
+  if (/(provide|share|give|need|verify|asking|asked for|ask for|wants|dite|de|bolse|chailo|lagbe|cai|jana|chaiche).*(otp|pin|password|cvv|gopon|ওটিপি|পিন|পাসওয়ার্ড)/i.test(lower) || /phishing|scam|suspicious|প্রতারণা|স্ক্যাম/i.test(lower)) {
     case_type = 'phishing_or_social_engineering';
     matchedKeywords.push('phishing');
     confidence = 0.95;
