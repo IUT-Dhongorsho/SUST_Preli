@@ -1,5 +1,6 @@
 // controllers/analyzeController.ts
 import type { Request, Response } from 'express';
+import pool from '../config/db.js';
 import { z } from 'zod';
 import { AnalyzeRequestSchema, AnalyzeResponseSchema } from '../core/schemas.js';
 import { matchTransaction } from '../services/transaction_matching/matcher.js';
@@ -7,6 +8,7 @@ import { classifyByRules } from '../services/classification/classification.js';
 import { analyzeTicketWithLLM } from '../services/llm/groq.service.js';
 
 export const analyzeTicket = async (req: Request, res: Response) => {
+  const startTime = Date.now();
   try {
     // 1. Validate request
     const validated = AnalyzeRequestSchema.parse(req.body);
@@ -47,6 +49,18 @@ export const analyzeTicket = async (req: Request, res: Response) => {
 
     // 3. Validate final response schema
     const validatedResponse = AnalyzeResponseSchema.parse(finalResponse);
+    
+    // 4. Log to Database
+    const latency_ms = Date.now() - startTime;
+    try {
+      await pool.query(
+        'INSERT INTO ticket_logs (ticket_id, request, response, latency_ms) VALUES ($1, $2, $3, $4)',
+        [validated.ticket_id, validated, validatedResponse, latency_ms]
+      );
+    } catch (dbError) {
+      console.error("Failed to log ticket to database:", dbError);
+    }
+
     res.status(200).json(validatedResponse);
 
   } catch (error) {
