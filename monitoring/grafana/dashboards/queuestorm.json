@@ -3,5 +3,64 @@
   "timezone": "browser",
   "schemaVersion": 38,
   "refresh": "5s",
-  "panels": []
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Request Latency (P95)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(ticket_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "P95 HTTP Latency",
+          "datasource": "Prometheus"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Groq API Latency (P95)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(groq_call_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "P95 Groq Latency",
+          "datasource": "Prometheus"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Safety Violations Blocked",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum(safety_violations_blocked_total)",
+          "datasource": "Prometheus"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Schema Retries",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum(schema_validation_retries_total)",
+          "datasource": "Prometheus"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Error Rate (5xx)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(ticket_duration_seconds_count{status_code=~\"5..\"}[5m]))",
+          "legendFormat": "5xx Errors/sec",
+          "datasource": "Prometheus"
+        }
+      ]
+    }
+  ]
 }
