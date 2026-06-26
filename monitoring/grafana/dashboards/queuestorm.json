@@ -1,5 +1,6 @@
 {
   "title": "QueueStorm Investigator Metrics",
+  "uid": "ticket-analyzer",
   "timezone": "browser",
   "schemaVersion": 38,
   "refresh": "5s",
