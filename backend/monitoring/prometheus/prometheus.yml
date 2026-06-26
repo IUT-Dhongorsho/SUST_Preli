@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'ticket-analyzer'
+    static_configs:
+      - targets: ['app1:3001', 'app2:3002']   # matches your docker-compose service names

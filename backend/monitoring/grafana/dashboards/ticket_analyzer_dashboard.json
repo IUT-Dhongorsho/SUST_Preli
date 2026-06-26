@@ -1,0 +1,72 @@
+{
+  "title": "Ticket Analyzer",
+  "uid": "ticket-analyzer",
+  "panels": [
+    {
+      "title": "Request Latency (p50/p95/p99)",
+      "type": "timeseries",
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(ticket_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(ticket_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(ticket_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "title": "Case Type Distribution",
+      "type": "barchart",
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "targets": [
+        {
+          "expr": "sum by (case_type) (ticket_case_type_total)",
+          "legendFormat": "{{case_type}}"
+        }
+      ]
+    },
+    {
+      "title": "Safety Gate Interventions",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 8},
+      "targets": [
+        {
+          "expr": "sum(safety_gate_interventions_total)",
+          "legendFormat": "Total interventions"
+        }
+      ]
+    },
+    {
+      "title": "Evidence Verdict",
+      "type": "piechart",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
+      "targets": [
+        {
+          "expr": "sum by (verdict) (ticket_evidence_verdict_total)",
+          "legendFormat": "{{verdict}}"
+        }
+      ]
+    },
+    {
+      "title": "Human Review Required",
+      "type": "stat",
+      "gridPos": {"h": 4, "w": 8, "x": 16, "y": 8},
+      "targets": [
+        {
+          "expr": "sum(ticket_human_review_total)",
+          "legendFormat": "Human review cases"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 30,
+  "time": {"from": "now-30m", "to": "now"},
+  "refresh": "5s"
+}
